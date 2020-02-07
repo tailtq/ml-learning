@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form class="form" method="post" enctype="multipart/form-data">
+    <input type="file" name="image">
+    <button>Submit</button>
+</form>
+<p class="output">Output: <b></b></p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.form').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('image', $('input[name="image"]')[0].files[0]);
+
+            $.ajax({
+                url: '/process-image',
+                type: 'POST',
+                dataType: 'json',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $('.output b').text(res.result)
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

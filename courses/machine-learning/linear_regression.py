@@ -21,8 +21,8 @@ class LinearRegression:
         for i in range(epochs):
             A = self.forward_propagate(self.W, self.b, self.X)
             
-            if (i + 1) % 100 == 0:
-                print('Epoch ' + str(i) + ' cost: ' + str(self.compute_cost(m, A, self.y)))
+            if (i + 1) % 100 == 0 or i == 0:
+                print('Epoch ' + str(i + 1) + ' cost: ' + str(self.compute_cost(m, A, self.y)))
             
             # -------------------- #
             bp_result = self.backward_propagate(m, self.X, A, self.y)

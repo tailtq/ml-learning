@@ -282,7 +282,7 @@ BsmtQual: Evaluates the height of the basement
        Fa	Fair (70-79 inches)
        Po	Poor (<70 inches
        NA	No Basement
-		
+
 BsmtCond: Evaluates the general condition of the basement
 
        Ex	Excellent
@@ -374,7 +374,7 @@ FullBath: Full bathrooms above grade
 
 HalfBath: Half baths above grade
 
-Bedroom: Bedrooms above grade (does NOT include basement bedrooms)
+BedroomAbvGr: Bedrooms above grade (does NOT include basement bedrooms)
 
 Kitchen: Kitchens above grade
 

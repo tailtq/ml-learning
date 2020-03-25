@@ -1,0 +1,6 @@
+test/
+train/
+.ipynb_checkpoints/
+model.h5
+model2.h5
+

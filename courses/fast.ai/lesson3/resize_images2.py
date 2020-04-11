@@ -6,8 +6,8 @@ import glob
 
 from pathlib import Path
 
-image_size = (240, 160)
-path = Path('../../../../datasets/camvid/train')
+image_size = (256, 192)
+path = Path('../../../../datasets/camvid/test')
 
 images = glob.glob(str(path/'images/*.png'))
 images_resize_path = path/('images_' + str(image_size[0]))

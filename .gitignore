@@ -6,3 +6,6 @@ computer-vision-with-opencv-and-deep-learning/data
 hands-on-ml/course
 deep-learning-specialization/assignments
 references
+
+**/dataset
+**/*.h5

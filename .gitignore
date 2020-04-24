@@ -8,3 +8,4 @@ references
 
 **/dataset
 **/*.h5
+**/*.dat

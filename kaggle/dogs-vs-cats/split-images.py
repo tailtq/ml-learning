@@ -1,9 +1,8 @@
 import os
 import shutil
-
 from os.path import isfile, join
 
-os.chdir('train')
+os.chdir('dataset/train')
 
 os.mkdir('cat')
 os.mkdir('dog')

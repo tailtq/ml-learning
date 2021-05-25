@@ -9,3 +9,5 @@ references
 **/dataset
 **/*.h5
 **/*.dat
+
+**/__pycache__

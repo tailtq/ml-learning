@@ -1,15 +1,9 @@
 import os
-from pathlib import Path
-
 import cv2
-import pickle
-import numpy as np
-from image2face import ArcfacePrediction, RetinafacePrediction
+import utils.pickle_utils as pickle_utils
+from config import face_detection, face_recognition
 
-face_detection = RetinafacePrediction("mobile0.25", use_cpu=True)
-face_recognition = ArcfacePrediction("resnet50", use_cpu=True)
-
-pickle_path = Path(__file__).parent / "faces.pickle"
+pickle_path = "./faces.pickle"
 
 
 def save_facial_vector(name, image_path):
@@ -28,24 +22,12 @@ def save_facial_vector(name, image_path):
     feature_vectors = {}
 
     if os.path.exists(pickle_path):
-        feature_vectors = load_pickle(pickle_path)
+        feature_vectors = pickle_utils.load_pickle(pickle_path)
 
     feature_vectors[name] = feature_vector
-    save_pickle(pickle_path, feature_vectors)
+    pickle_utils.save_pickle(pickle_path, feature_vectors)
 
     print("Save face successfully!")
-
-
-def save_pickle(file_path, data):
-    with open(file_path, "wb") as handle:
-        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-def load_pickle(file_path):
-    with open(file_path, "rb") as handle:
-        data = pickle.load(handle)
-
-    return data
 
 
 if __name__ == "__main__":

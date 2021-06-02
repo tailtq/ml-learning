@@ -1,11 +1,13 @@
+import os
 import numpy as np
 import utils.pickle_utils as pickle_utils
 from image2face import ArcfacePrediction, RetinafacePrediction
 
 face_detection = RetinafacePrediction("mobile0.25", use_cpu=True)
-face_recognition = ArcfacePrediction("resnet50", use_cpu=True)
+face_recognition = ArcfacePrediction("resnet100", use_cpu=True)
 
-feature_vectors = pickle_utils.load_pickle("./faces.pickle")
+pickle_file = "./faces.pickle"
+feature_vectors = pickle_utils.load_pickle(pickle_file) if os.path.exists(pickle_file) else {}
 
 CONFIG = {
     "DROP_FRAME_AFTER_STEP": 2,

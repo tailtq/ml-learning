@@ -5,7 +5,7 @@ import imutils
 from config import CONFIG, face_detection, face_recognition
 
 # "http://192.168.1.54:4747/video"
-video_path = "musk_test.mp4"
+video_path = 0
 stream = cv2.VideoCapture(video_path)
 # set fourcc before width and height
 stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
@@ -46,7 +46,7 @@ while True:
             continue
 
         # align face and extract feature vector
-        aligned_face = face_detection.align_face(frame, detection)
+        aligned_face = face_detection.align_face(frame, detection, width=112, height=112)
         detection = list(map(int, detection))
 
         cv2.imshow(f"Test_{index}", aligned_face)

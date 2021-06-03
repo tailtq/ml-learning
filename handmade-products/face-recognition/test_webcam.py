@@ -12,19 +12,19 @@ if __name__ == "__main__":
     image_decoding_queue = queue.Queue()
     tracking_queue = queue.Queue()
 
-    image_decoding_thread = ImageDecodingThread("./test_samples/20210528_083812.mp4",
+    image_decoding_thread = ImageDecodingThread("./test_samples/musk_test.mp4",
                                                 video_config,
                                                 process_status,
                                                 image_decoding_queue)
     image_decoding_thread.run_thread()
 
-    detection_n_recognition_thread = DetectionThread(process_status, image_decoding_queue, tracking_queue)
+    detection_n_recognition_thread = DetectionThread(video_config, process_status, image_decoding_queue, tracking_queue)
     detection_n_recognition_thread.run_thread()
 
-    # tracking_thread = TrackingThread(video_config, process_status, tracking_queue)
-    # tracking_thread.run_thread()
+    tracking_thread = TrackingThread(video_config, process_status, tracking_queue)
+    tracking_thread.run_thread()
 
-    while not process_status.image_decoding_status or not process_status.detecting_status:
+    while not process_status.image_decoding_status or not process_status.detecting_status or not process_status.tracking_status:
         time.sleep(1)
 
 

@@ -2,17 +2,19 @@ import time
 import queue
 
 from configs.models import face_detection
-from configs.video_config import ProcessStatus
+from configs.video_config import ProcessStatus, VideoConfig
 from threads.base_thread import BaseThread
 
 
 class DetectionThread(BaseThread):
     def __init__(self,
+                 video_config: VideoConfig,
                  process_status: ProcessStatus,
                  image_decoding_queue: queue.Queue,
                  tracking_queue: queue.Queue):
         super().__init__()
 
+        self.video_config = video_config
         self.process_status = process_status
         self.image_decoding_queue = image_decoding_queue
         self.tracking_queue = tracking_queue
@@ -24,9 +26,7 @@ class DetectionThread(BaseThread):
         while True:
             if not self.image_decoding_queue.empty():
                 queue_data = self.image_decoding_queue.get()
-                start_time = time.time()
-                faces = face_detection.predict(queue_data["frame"], width=480)
-                print(f"{self.__class__.__name__}: {time.time() - start_time}")
+                faces = face_detection.predict(queue_data["frame"], width=self.video_config.detection_size)
 
                 self.tracking_queue.put({
                     **queue_data,

@@ -11,3 +11,6 @@ class BaseThread:
     def run_thread(self, args=()):
         self.thread = threading.Thread(target=self._run, args=args, daemon=True)
         self.thread.start()
+
+    def join_thread(self):
+        self.thread.join()

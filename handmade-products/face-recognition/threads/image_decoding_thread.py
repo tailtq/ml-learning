@@ -30,8 +30,9 @@ class ImageDecodingThread(BaseThread):
         stream = self._load_stream()
         drop_last_frame_in_n_steps = self.video_config.drop_last_frame_in_n_steps
 
+        start_time = time.time()
+
         while True:
-            start_time = time.time()
             have_frame = stream.grab()
 
             if not have_frame:
@@ -53,7 +54,7 @@ class ImageDecodingThread(BaseThread):
             })
 
             # print performance time
-            print(f"{self.__class__.__name__}: FPS {1 / (time.time() - start_time)}")
+        print(f"{self.__class__.__name__}: {time.time() - start_time}")
 
         # set status for this thread
         self.process_status.image_decoding_status = True

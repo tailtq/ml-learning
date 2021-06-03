@@ -29,9 +29,9 @@ class ImageDecodingThread(BaseThread):
         index = 0
         stream = self._load_stream()
         drop_last_frame_in_n_steps = self.video_config.drop_last_frame_in_n_steps
-        start_time = time.time()
 
         while True:
+            start_time = time.time()
             have_frame = stream.grab()
 
             if not have_frame:
@@ -47,14 +47,18 @@ class ImageDecodingThread(BaseThread):
             _, frame = stream.retrieve()
 
             # put image to queue to be handled at another thread
-            self.image_decoding_queue.put([index, frame])
+            self.image_decoding_queue.put({
+                "index": index,
+                "frame": frame,
+            })
+
+            # print performance time
+            print(f"{self.__class__.__name__}: FPS {1 / (time.time() - start_time)}")
 
         # set status for this thread
         self.process_status.image_decoding_status = True
         # close the connection to the device or video file
         stream.release()
-
-        print(f"Hello world: {time.time() - start_time}")
 
     def _load_stream(self):
         """

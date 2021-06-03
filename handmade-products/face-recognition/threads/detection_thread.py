@@ -1,3 +1,4 @@
+import time
 import queue
 
 from configs.models import face_detection
@@ -22,10 +23,15 @@ class DetectionThread(BaseThread):
 
         while True:
             if not self.image_decoding_queue.empty():
-                frame_index, frame = self.image_decoding_queue.get()
-                faces = face_detection.predict(frame, width=480)
-                print(frame_index, faces.shape)
-                # print(faces)
+                queue_data = self.image_decoding_queue.get()
+                start_time = time.time()
+                faces = face_detection.predict(queue_data["frame"], width=480)
+                print(f"{self.__class__.__name__}: {time.time() - start_time}")
+
+                self.tracking_queue.put({
+                    **queue_data,
+                    "faces": faces
+                })
             elif self.process_status.image_decoding_status and self.image_decoding_queue.empty():
                 # set status for this thread
                 self.process_status.detecting_status = True

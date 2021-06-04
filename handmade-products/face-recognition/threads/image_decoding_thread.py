@@ -10,13 +10,13 @@ class ImageDecodingThread(BaseThread):
                  url,
                  video_config: VideoConfig,
                  process_status: ProcessStatus,
-                 image_decoding_queue: queue.Queue):
+                 detecting_queue: queue.Queue):
         super().__init__()
 
         self.url = url
         self.video_config = video_config
         self.process_status = process_status
-        self.image_decoding_queue = image_decoding_queue
+        self.detecting_queue = detecting_queue
 
     def _run(self):
         """
@@ -24,7 +24,6 @@ class ImageDecodingThread(BaseThread):
         :return:
         """
         print(f"ImageDecodingThread is running")
-        print("---" * 30)
 
         index = 0
         stream = self._load_stream()
@@ -33,6 +32,10 @@ class ImageDecodingThread(BaseThread):
         start_time = time.time()
 
         while True:
+            if self.detecting_queue.qsize() > self.video_config.max_queue_size:
+                time.sleep(0.001)
+                continue
+
             have_frame = stream.grab()
 
             if not have_frame:
@@ -48,7 +51,7 @@ class ImageDecodingThread(BaseThread):
             _, frame = stream.retrieve()
 
             # put image to queue to be handled at another thread
-            self.image_decoding_queue.put({
+            self.detecting_queue.put({
                 "index": index,
                 "frame": frame,
             })

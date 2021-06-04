@@ -9,12 +9,14 @@ class TrackingThread(BaseThread):
     def __init__(self,
                  video_config: VideoConfig,
                  process_status: ProcessStatus,
-                 tracking_queue: queue.Queue):
+                 tracking_queue: queue.Queue,
+                 visualization_queue: queue.Queue):
         super().__init__()
 
         self.video_config = video_config
         self.process_status = process_status
         self.tracking_queue = tracking_queue
+        self.visualization_queue = visualization_queue
         self.tracker = Sort()
 
     def _run(self):
@@ -23,13 +25,11 @@ class TrackingThread(BaseThread):
         :return:
         """
         print(f"TrackingThread is running")
-        print("---" * 30)
 
         while True:
             if self.tracking_queue.empty():
                 # stop tracking process if queue is empty and detecting status is done
                 if self.process_status.detecting_status:
-                    self.process_status.tracking_status = True
                     break
 
                 time.sleep(0.0001)
@@ -37,7 +37,13 @@ class TrackingThread(BaseThread):
 
             queue_data = self.tracking_queue.get()
             faces = queue_data["faces"][:, :4]
-            print(faces.shape)
 
-            track_ids = self.tracker.update(faces)
-            print(track_ids)
+            tracks = self.tracker.update(faces)
+
+            self.visualization_queue.put({
+                "tracks": tracks,
+                "frame": queue_data["frame"]
+            })
+            # apply face recognition
+
+        self.process_status.tracking_status = True

@@ -2,11 +2,13 @@ class VideoConfig:
     def __init__(self,
                  drop_last_frame_in_n_steps=0,
                  detection_size=480,
-                 recognition_size=(112, 112)):
+                 recognition_size=(112, 112),
+                 max_queue_size=50):
         # for dropping frame, drop_last_frame_in_n_steps value should be in [2, n] range
         self.drop_last_frame_in_n_steps = drop_last_frame_in_n_steps
         self.detection_size = detection_size
         self.recognition_size = recognition_size
+        self.max_queue_size = max_queue_size
 
 
 class ProcessStatus:

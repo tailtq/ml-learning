@@ -1,7 +1,7 @@
 import os
 import cv2
 import utils.pickle_utils as pickle_utils
-from config import face_detection, face_recognition
+from configs.models import face_detection, face_recognition
 
 pickle_path = "./faces.pickle"
 

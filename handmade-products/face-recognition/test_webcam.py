@@ -4,6 +4,7 @@ import cv2
 
 import utils.drawing_utils as drawing_utils
 from configs.video_config import VideoConfig, ProcessStatus
+from configs.models import feature_vectors
 from threads import ImageDecodingThread, DetectionThread, TrackingThread
 
 
@@ -31,19 +32,28 @@ if __name__ == "__main__":
     tracking_queue = queue.Queue()
     visualization_queue = queue.Queue()
 
-    image_decoding_thread = ImageDecodingThread("./test_samples/musk_test.mp4",
-                                                video_config,
-                                                process_status,
-                                                detecting_queue)
-    image_decoding_thread.run_thread()
+    try:
+        image_decoding_thread = ImageDecodingThread("./samples/musk_test.mp4",
+                                                    video_config,
+                                                    process_status,
+                                                    detecting_queue)
+        image_decoding_thread.run_thread()
 
-    detecting_thread = DetectionThread(video_config, process_status, detecting_queue, tracking_queue)
-    detecting_thread.run_thread()
+        detecting_thread = DetectionThread(video_config, process_status, detecting_queue, tracking_queue)
+        detecting_thread.run_thread()
 
-    tracking_thread = TrackingThread(video_config, process_status, tracking_queue, visualization_queue)
-    tracking_thread.run_thread()
+        tracking_thread = TrackingThread(feature_vectors,
+                                         video_config,
+                                         process_status,
+                                         tracking_queue,
+                                         visualization_queue)
+        tracking_thread.run_thread()
 
-    visualize(process_status, visualization_queue)
+        visualize(process_status, visualization_queue)
+    except KeyboardInterrupt:
+        detecting_queue.queue.clear()
+        tracking_queue.queue.clear()
+        visualization_queue.queue.clear()
 
 # import cv2
 # from configs.models import face_detection

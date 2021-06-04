@@ -52,7 +52,7 @@ class ImageDecodingThread(BaseThread):
 
             # put image to queue to be handled at another thread
             self.detecting_queue.put({
-                "index": index,
+                "frame_index": index,
                 "frame": frame,
             })
 

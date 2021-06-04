@@ -31,7 +31,7 @@ if __name__ == "__main__":
         for index, distance in enumerate(distances):
             print(f"Name --- {CONFIG['FACES']['NAMES'][index]}: {distance}")
 
-        if distances[closest_face_index] < CONFIG["THRESHOLD"]:
+        if distances[closest_face_index] < 0.1:
             print(f"Result --- {CONFIG['FACES']['NAMES'][closest_face_index]}: {distances[closest_face_index]}")
             # write name to object
             cx = detection[0]

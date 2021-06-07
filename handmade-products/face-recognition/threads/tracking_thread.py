@@ -81,15 +81,15 @@ class TrackingThread(BaseThread):
         face = face_detection.align_face(frame, np.concatenate((track[:4], track[5:])))
 
         return {
-            "box": [track[0], track[1], track[2], track[3]],
             "frame_index": frame_index,
+            "box": [track[0], track[1], track[2], track[3]],
             "confidence": track[5],
             "face": face,
             "face_size": list(reversed(face.shape[:2])),
         }
 
     def recognize_faces(self, current_track_ids):
-        comparing_names = self.comparing_faces.keys()
+        comparing_names = list(self.comparing_faces.keys())
         comparing_vectors = np.array(list(self.comparing_faces.values()))
 
         for track_id in current_track_ids:
@@ -99,20 +99,18 @@ class TrackingThread(BaseThread):
 
             if appearance["face_size"][0] >= self.video_config.recognition_size[0] and \
                appearance["face_size"][1] >= self.video_config.recognition_size[1]:
-                if track["identity"] is not None or track["recognition_time"] > 3:
+                if track["identity"] is not None or track["recognition_time"] >= 1:
                     continue
 
-                print(appearance["face"].max(), appearance["face"].shape, type(appearance["face"]))
                 # get facial vector by face
                 facial_vector = face_recognition.predict(appearance["face"])
                 track["recognition_time"] += 1
-                print(facial_vector)
 
                 # compare distances and get the closest vector's index
                 distances = np.sqrt(np.square(facial_vector - comparing_vectors).sum(axis=1))
                 min_distance = distances.min()
 
-                if min_distance < self.video_config.recognition_threshold:
+                if min_distance <= self.video_config.recognition_threshold:
                     closest_face_index = distances.argmin()
                     # set name for track
                     track["identity"] = comparing_names[closest_face_index]

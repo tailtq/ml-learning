@@ -8,5 +8,3 @@ face_recognition = ArcfacePrediction("resnet100", use_cpu=True)
 
 pickle_file = "./faces.pickle"
 feature_vectors = pickle_utils.load_pickle(pickle_file) if os.path.exists(pickle_file) else {}
-
-reversed()

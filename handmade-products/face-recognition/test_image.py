@@ -2,11 +2,18 @@ import cv2
 import sys
 import imutils
 import numpy as np
-from config import CONFIG, face_detection, face_recognition
+# from insightface.model_zoo.face_recognition import FaceRecognition
+from configs.models import face_detection, face_recognition
+from configs.models import feature_vectors
 
+# app = FaceRecognition("ArcFace", False, "FaceEmbedding/model-r100-ii/model-0000.params")
+# app.prepare(-1)
 
 if __name__ == "__main__":
     image_path = sys.argv[1]
+
+    comparing_names = list(feature_vectors.keys())
+    comparing_vectors = np.array(list(feature_vectors.values()))
 
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -17,26 +24,29 @@ if __name__ == "__main__":
         if detection[0] < 0 or detection[1] < 0 or detection[2] < 0 or detection[3] < 0:
             continue
 
-        # align face and extract feature vector
         aligned_face = face_detection.align_face(image, detection, width=112, height=112)
-        detection = list(map(int, detection))
-        cv2.imshow(f"Image{index}", cv2.cvtColor(aligned_face, cv2.COLOR_RGB2BGR))
 
+        # norm_face = np.zeros(aligned_face.shape)
+        # cv2.normalize(aligned_face, norm_face, 0, 255, cv2.NORM_MINMAX)
+        # face_feature_vector = face_recognition.predict(norm_face)
         face_feature_vector = face_recognition.predict(aligned_face)
 
+        # align face and extract feature vector
+        detection = list(map(int, detection))
+
         # # calculate Euclidean distance
-        distances = np.sqrt(np.square(face_feature_vector - CONFIG["FACES"]["VECTORS"]).sum(axis=1))
+        distances = np.sqrt((np.square(face_feature_vector - comparing_vectors)).sum(axis=1).squeeze())
         closest_face_index = distances.argmin()
 
         for index, distance in enumerate(distances):
-            print(f"Name --- {CONFIG['FACES']['NAMES'][index]}: {distance}")
+            print(f"Name --- {comparing_names[index]}: {distance}")
 
-        if distances[closest_face_index] < 0.1:
-            print(f"Result --- {CONFIG['FACES']['NAMES'][closest_face_index]}: {distances[closest_face_index]}")
+        if distances[closest_face_index] < 1.5:
+            print(f"Result --- {comparing_names[closest_face_index]}: {distances[closest_face_index]}")
             # write name to object
             cx = detection[0]
             cy = detection[1] - 24
-            cv2.putText(image, CONFIG["FACES"]["NAMES"][closest_face_index], (cx, cy), cv2.FONT_HERSHEY_DUPLEX, 1,
+            cv2.putText(image, comparing_names[closest_face_index], (cx, cy), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (255, 255, 255), 2)
 
         # draw bounding box

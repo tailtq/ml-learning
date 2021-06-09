@@ -16,7 +16,11 @@ def save_facial_vector(name, image_path):
 
     widths = detections[:, 2] - detections[:, 0]
     detection = detections[widths.argmax()]
-    aligned_face = face_detection.align_face(image, detection)
+    aligned_face = face_detection.align_face(image, detection, width=112, height=112)
+
+    # norm_face = np.zeros(aligned_face.shape)
+    # cv2.normalize(aligned_face, norm_face, 0, 255, cv2.NORM_MINMAX)
+    # feature_vector = face_recognition.predict(norm_face)
     feature_vector = face_recognition.predict(aligned_face)
 
     feature_vectors = {}
@@ -31,7 +35,5 @@ def save_facial_vector(name, image_path):
 
 
 if __name__ == "__main__":
-    save_facial_vector("Musk", "./samples/Musk.jpeg")
-    save_facial_vector("Tai", "./samples/Tai.jpg")
-    save_facial_vector("Bau", "./samples/Bau.png")
-    save_facial_vector("Thai", "./samples/Thai.jpeg")
+    save_facial_vector("Tai", "./faces/tai.jpg")
+    save_facial_vector("Bau", "./faces/bau.jpg")

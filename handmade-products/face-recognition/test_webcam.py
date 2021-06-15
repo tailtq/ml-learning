@@ -33,7 +33,7 @@ if __name__ == "__main__":
     visualization_queue = queue.Queue()
 
     try:
-        image_decoding_thread = ImageDecodingThread("./samples/musk_test.mp4",
+        image_decoding_thread = ImageDecodingThread(0,
                                                     video_config,
                                                     process_status,
                                                     detecting_queue)

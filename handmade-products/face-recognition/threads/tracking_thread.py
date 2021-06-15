@@ -109,6 +109,7 @@ class TrackingThread(BaseThread):
                 # compare distances and get the closest vector's index
                 distances = np.sqrt(np.square(facial_vector - comparing_vectors).sum(axis=1))
                 min_distance = distances.min()
+                print(f"Min distance: {min_distance}")
 
                 if min_distance <= self.video_config.recognition_threshold:
                     closest_face_index = distances.argmin()

@@ -3,7 +3,7 @@ class VideoConfig:
                  drop_last_frame_in_n_steps=0,
                  detection_size=480,
                  recognition_size=(64, 64),
-                 recognition_threshold=0.7,
+                 recognition_threshold=1.1,
                  max_queue_size=50):
         # for dropping frame, drop_last_frame_in_n_steps value should be in [2, n] range
         self.drop_last_frame_in_n_steps = drop_last_frame_in_n_steps

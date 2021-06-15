@@ -2,6 +2,7 @@ import cv2
 import sys
 import imutils
 import numpy as np
+import time
 # from insightface.model_zoo.face_recognition import FaceRecognition
 from configs.models import face_detection, face_recognition
 from configs.models import feature_vectors
@@ -25,10 +26,6 @@ if __name__ == "__main__":
             continue
 
         aligned_face = face_detection.align_face(image, detection, width=112, height=112)
-
-        # norm_face = np.zeros(aligned_face.shape)
-        # cv2.normalize(aligned_face, norm_face, 0, 255, cv2.NORM_MINMAX)
-        # face_feature_vector = face_recognition.predict(norm_face)
         face_feature_vector = face_recognition.predict(aligned_face)
 
         # align face and extract feature vector

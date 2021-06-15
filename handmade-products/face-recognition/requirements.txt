@@ -1,0 +1,4 @@
+image2face
+opencv-python
+numpy
+imutils

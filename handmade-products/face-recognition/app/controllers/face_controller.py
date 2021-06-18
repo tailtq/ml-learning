@@ -1,15 +1,9 @@
-import os
-import cv2
-import app.utils.pickle_utils as pickle_utils
-from configs.models import face_detection, face_recognition
+from flask import Blueprint
 
-pickle_path = "./faces.pickle"
+blueprint = Blueprint("face", __name__, url_prefix="/api/faces")
 
 
-def save_facial_vector(name, image_path):
-    image = cv2.imread(image_path)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
+def save_facial_vector(name, image):
     detections = face_detection.predict(image)
 
     assert len(detections) != 0
@@ -34,6 +28,15 @@ def save_facial_vector(name, image_path):
     print("Save face successfully!")
 
 
-if __name__ == "__main__":
-    save_facial_vector("Tai", "./faces/tai.jpg")
-    save_facial_vector("Bau", "./faces/bau.jpg")
+@blueprint.route("/", methods=["POST"])
+def add_face():
+    return {
+        "status": True,
+        "message": "OK",
+        "data": "123"
+    }
+
+
+def update_face(id):
+    pass
+

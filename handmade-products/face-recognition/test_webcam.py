@@ -2,7 +2,7 @@ import time
 import queue
 import cv2
 
-import utils.drawing_utils as drawing_utils
+import app.utils.drawing_utils as drawing_utils
 from configs.video_config import VideoConfig, ProcessStatus
 from configs.models import feature_vectors
 from threads import ImageDecodingThread, DetectionThread, TrackingThread

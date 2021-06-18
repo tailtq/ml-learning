@@ -1,7 +1,7 @@
 import os
 from image2face import ArcfacePrediction, RetinafacePrediction
 
-import utils.pickle_utils as pickle_utils
+import app.utils.pickle_utils as pickle_utils
 
 face_detection = RetinafacePrediction("mobile0.25", use_cpu=True)
 face_recognition = ArcfacePrediction("resnet100", use_cpu=False)

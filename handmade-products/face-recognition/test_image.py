@@ -26,7 +26,9 @@ if __name__ == "__main__":
             continue
 
         aligned_face = face_detection.align_face(image, detection, width=112, height=112)
+        # start = time.time()
         face_feature_vector = face_recognition.predict(aligned_face)
+        # print(f"Time: {time.time() - start}")
 
         # align face and extract feature vector
         detection = list(map(int, detection))

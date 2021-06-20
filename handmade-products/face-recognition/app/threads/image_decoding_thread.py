@@ -1,8 +1,8 @@
 import cv2
 import time
 import queue
-from configs.video_config import VideoConfig, ProcessStatus
-from threads.base_thread import BaseThread
+from app.configs.video_config import VideoConfig, ProcessStatus
+from app.threads.base_thread import BaseThread
 
 
 class ImageDecodingThread(BaseThread):

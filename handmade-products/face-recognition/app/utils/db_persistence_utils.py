@@ -7,9 +7,25 @@ class DBPersistenceUtils:
         self.table_name = table_name
 
     def find(self):
-        pass
+        con = self._generate_connection()
 
-    def find_one(self, rowid: int):
+        cur = con.cursor()
+        cur.execute(f"SELECT * FROM {self.table_name}")
+        # get data
+        batch_values = cur.fetchall()
+
+        # get columns name
+        columns = list(map(lambda x: x[0], cur.description))
+
+        cur.close()
+        con.close()
+
+        # combine columns and values
+        result = [dict(zip(columns, values)) for values in batch_values]
+
+        return result
+
+    def find_one(self, row_id: int):
         """
         Find a row by its id
         :param rowid:
@@ -18,7 +34,7 @@ class DBPersistenceUtils:
         con = self._generate_connection()
 
         cur = con.cursor()
-        cur.execute(f"SELECT * FROM {self.table_name} WHERE id = ?", [rowid])
+        cur.execute(f"SELECT * FROM {self.table_name} WHERE id = ?", [row_id])
         # get data
         values = cur.fetchone()
 
@@ -27,6 +43,9 @@ class DBPersistenceUtils:
 
         cur.close()
         con.close()
+
+        if not values:
+            return None
 
         # combine columns and values
         result = dict(zip(columns, values))
@@ -47,7 +66,7 @@ class DBPersistenceUtils:
 
         columns = ", ".join(columns)
         question_mark = ", ".join(question_mark)
-        query = f"insert into {self.table_name}({columns}) values ({question_mark})"
+        query = f"INSERT INTO {self.table_name}({columns}) VALUES ({question_mark})"
 
         # execute query and get newest id
         cur = con.cursor()
@@ -64,8 +83,35 @@ class DBPersistenceUtils:
     def update(self):
         pass
 
-    def delete(self):
-        pass
+    def delete(self, row_id) -> int:
+        con = self._generate_connection()
+
+        cur = con.cursor()
+        cur.execute(f"DELETE FROM {self.table_name} WHERE id = ?", [row_id])
+        con.commit()
+
+        total_rows = cur.rowcount
+
+        cur.close()
+        con.close()
+
+        return total_rows
+
+    def delete_by_condition(self, conditions: dict, operator: str = 'and') -> int:
+        new_conditions = f" {operator} ".join([f"{column} = {value}" for column, value in conditions.items()])
+
+        con = self._generate_connection()
+
+        cur = con.cursor()
+        cur.execute(f"DELETE FROM {self.table_name} WHERE {new_conditions}")
+        con.commit()
+
+        total_rows = cur.rowcount
+
+        cur.close()
+        con.close()
+
+        return total_rows
 
     def _generate_connection(self):
         return sqlite3.connect(self.database_name)

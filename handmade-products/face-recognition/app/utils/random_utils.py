@@ -3,10 +3,10 @@ import time
 
 
 def random_string(string_len=10):
-    characters = [i for i in 'qwertyuiopasdfghjklzxcvbnm1234567890']
+    characters = [i for i in "qwertyuiopasdfghjklzxcvbnm1234567890"]
     random_characters = random.sample(characters, string_len)
 
-    return ''.join(random_characters)
+    return "".join(random_characters)
 
 
 def random_string_with_datetime(string_len=10):

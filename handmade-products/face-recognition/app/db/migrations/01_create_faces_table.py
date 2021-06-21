@@ -4,10 +4,10 @@ import sqlite3
 load_dotenv()
 config = dotenv_values(".env")
 
-if "DATABASE_NAME" not in config:
+if "DATABASE_PATH" not in config:
     raise Exception("CONFIG_NOT_FOUND")
 
-con = sqlite3.connect(config["DATABASE_NAME"])
+con = sqlite3.connect(config["DATABASE_PATH"])
 cur = con.cursor()
 
 cur.execute("""

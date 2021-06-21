@@ -1,10 +1,9 @@
-import time
 import queue
 
 from sort.sort import *
-from configs.models import face_recognition, face_detection
-from configs.video_config import VideoConfig, ProcessStatus
-from threads.base_thread import BaseThread
+from app.configs.models import face_recognition, face_detection
+from app.configs.video_config import VideoConfig, ProcessStatus
+from app.threads.base_thread import BaseThread
 
 
 class TrackingThread(BaseThread):

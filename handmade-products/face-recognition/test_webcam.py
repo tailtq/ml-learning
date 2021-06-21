@@ -3,9 +3,9 @@ import queue
 import cv2
 
 import app.utils.drawing_utils as drawing_utils
-from configs.video_config import VideoConfig, ProcessStatus
-from configs.models import feature_vectors
-from threads import ImageDecodingThread, DetectionThread, TrackingThread
+from app.configs.video_config import VideoConfig, ProcessStatus
+from app.configs.models import feature_vectors
+from app.threads import ImageDecodingThread, DetectionThread, TrackingThread
 
 
 def visualize(process_status, visualization_queue):

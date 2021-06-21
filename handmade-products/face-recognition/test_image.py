@@ -2,10 +2,9 @@ import cv2
 import sys
 import imutils
 import numpy as np
-import time
 # from insightface.model_zoo.face_recognition import FaceRecognition
-from configs.models import face_detection, face_recognition
-from configs.models import feature_vectors
+from app.configs.models import face_detection, face_recognition
+from app.configs.models import feature_vectors
 
 # app = FaceRecognition("ArcFace", False, "FaceEmbedding/model-r100-ii/model-0000.params")
 # app.prepare(-1)

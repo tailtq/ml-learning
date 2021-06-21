@@ -1,9 +1,9 @@
 import time
 import queue
 
-from configs.models import face_detection
-from configs.video_config import ProcessStatus, VideoConfig
-from threads.base_thread import BaseThread
+from app.configs.models import face_detection
+from app.configs.video_config import ProcessStatus, VideoConfig
+from app.threads.base_thread import BaseThread
 
 
 class DetectionThread(BaseThread):

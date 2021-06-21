@@ -2,3 +2,5 @@ image2face
 opencv-python
 numpy
 imutils
+python-dotenv
+Pillow

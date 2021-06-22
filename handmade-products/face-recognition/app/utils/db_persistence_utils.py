@@ -58,8 +58,6 @@ class DBPersistenceUtils:
         :param values: All of the data that the row has
         :return: (int) the id of the created row
         """
-        con = self._generate_connection()
-
         # generate query string
         columns = list(values.keys())
         question_mark = ["?"] * len(columns)
@@ -69,6 +67,7 @@ class DBPersistenceUtils:
         query = f"INSERT INTO {self.table_name}({columns}) VALUES ({question_mark})"
 
         # execute query and get newest id
+        con = self._generate_connection()
         cur = con.cursor()
         cur.execute(query, tuple(values.values()))
         con.commit()
@@ -80,12 +79,27 @@ class DBPersistenceUtils:
 
         return row_id
 
-    def update(self):
-        pass
+    def update(self, row_id, data: dict):
+        data = data.copy()
+
+        # handle empty data case by setting id = id like default column
+        updating_query = f", ".join([f"{column} = ?" for column in data.keys()])
+        updating_query = f", {updating_query}" if updating_query else ""
+
+        con = self._generate_connection()
+        cur = con.cursor()
+        cur.execute(f"UPDATE {self.table_name} SET id = id {updating_query} WHERE id = ?", (*data.values(), row_id))
+        con.commit()
+
+        total_rows = cur.rowcount
+
+        cur.close()
+        con.close()
+
+        return total_rows
 
     def delete(self, row_id) -> int:
         con = self._generate_connection()
-
         cur = con.cursor()
         cur.execute(f"DELETE FROM {self.table_name} WHERE id = ?", [row_id])
         con.commit()
@@ -98,12 +112,11 @@ class DBPersistenceUtils:
         return total_rows
 
     def delete_by_condition(self, conditions: dict, operator: str = 'and') -> int:
-        new_conditions = f" {operator} ".join([f"{column} = {value}" for column, value in conditions.items()])
+        new_conditions = f" {operator} ".join([f"{column} = ?" for column in conditions.keys()])
 
         con = self._generate_connection()
-
         cur = con.cursor()
-        cur.execute(f"DELETE FROM {self.table_name} WHERE {new_conditions}")
+        cur.execute(f"DELETE FROM {self.table_name} WHERE {new_conditions}", tuple(conditions.values()))
         con.commit()
 
         total_rows = cur.rowcount

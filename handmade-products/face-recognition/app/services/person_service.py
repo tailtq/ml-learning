@@ -48,16 +48,46 @@ class PersonService:
 
         # align face and extract facial vector
         aligned_face, facial_vector = self._extract_facial_vector(image)
-        avatar_path = LocalStorageUtils.save_image(aligned_face, avatar_local_storage)
+        image_path = LocalStorageUtils.save_image(aligned_face, avatar_local_storage)
 
         # insert data to database
         person_id = self.person_db_persistence.create({
             "name": name,
-            "avatar": avatar_path,
+            "avatar": image_path,
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
-        # insert face to pickle files
-        self.person_pickle_persistence.save_person(person_id, list(facial_vector))
+        # insert face to pickle file
+        self.person_pickle_persistence.save_person(person_id, list(facial_vector), image_path)
+
+        return self.person_db_persistence.find_one(person_id)
+
+    def update(self, person_id, data, image_binary):
+        person = self.person_db_persistence.find_one(person_id)
+
+        if not person:
+            raise Exception("resource_not_found")
+
+        # remove face in pickle file
+        if "remove_face_index" in data:
+            face_index = int(data["remove_face_index"])
+            del data["remove_face_index"]
+
+            if face_index >= 0:
+                self.person_pickle_persistence.delete_index(person_id, face_index)
+
+        # add face to pickle file
+        if image_binary is not None:
+            image = self._convert_binary_to_numpy(image_binary)
+
+            # align face and extract facial vector
+            aligned_face, facial_vector = self._extract_facial_vector(image)
+            image_path = LocalStorageUtils.save_image(aligned_face, avatar_local_storage)
+
+            # insert face to pickle file
+            self.person_pickle_persistence.save_person(person_id, list(facial_vector), image_path)
+
+        # update new data to person
+        self.person_db_persistence.update(person_id, data)
 
         return self.person_db_persistence.find_one(person_id)
 
@@ -112,20 +142,25 @@ class PersonPicklePersistence:
     def __init__(self, file_path):
         self.file_path = file_path
 
-    def save_person(self, person_id, vector):
+    def save_person(self, person_id, vector, image_path):
         """
         Create person & add face to pickle file
         :param person_id:
         :param vector:
+        :param image_path:
         :return:
         """
         people = load_pickle(self.file_path, {})
         
         if person_id not in people:
-            people[person_id] = [vector]
+            people[person_id] = {
+                "facial_vectors": [vector],
+                "images": [image_path]
+            }
         else:
-            people[person_id].append(vector)
-            
+            people[person_id]["facial_vectors"].append(vector)
+            people[person_id]["images"].append(image_path)
+
         save_pickle(self.file_path, people)
 
         return None
@@ -144,3 +179,17 @@ class PersonPicklePersistence:
         save_pickle(self.file_path, people)
 
         return None
+
+    def delete_index(self, person_id, index):
+        assert index >= 0
+
+        people = load_pickle(self.file_path, {})
+
+        if person_id in people and index < len(people[person_id]["images"]):
+            del people[person_id]["images"][index]
+            del people[person_id]["facial_vectors"][index]
+
+        save_pickle(self.file_path, people)
+
+        return None
+

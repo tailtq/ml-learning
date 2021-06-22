@@ -28,9 +28,12 @@ class PersonAPI(MethodView):
         return {"data": result}
 
     def put(self, person_id):
-        print("put", person_id)
-        # update & delete face
-        pass
+        image = request.files.get("image").read() if request.files.get("image") else None
+        result = self.person_service.update(person_id,
+                                            request.form.to_dict(),
+                                            image)
+
+        return {"data": result}
 
     def delete(self, person_id):
         total_rows = self.person_service.delete(person_id)

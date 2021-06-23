@@ -15,7 +15,8 @@ class ProcessController(View):
         result = {}
 
         if action == "start":
-            result["process_id"] = self.process_service.start_process()
+            stream_url = request.json.get("stream_url") if request.json else "samples/tai.mp4"
+            result["process_id"] = self.process_service.start_process(stream_url)
         elif action == "stop":
             process_id = request.args.get("id")
 

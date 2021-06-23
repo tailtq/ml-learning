@@ -16,10 +16,10 @@ class ProcessService(metaclass=SingletonMeta):
     def __init__(self):
         self.main_threads = {}
 
-    def start_process(self):
+    def start_process(self, stream_url):
         process_id = random_string_with_datetime()
 
-        tracking_process = TrackingProcess(process_id)
+        tracking_process = TrackingProcess(stream_url)
         tracking_process.run_thread()
         self.main_threads[process_id] = tracking_process
 
@@ -34,9 +34,9 @@ class ProcessService(metaclass=SingletonMeta):
 
 
 class TrackingProcess(BaseThread):
-    def __init__(self, process_id):
+    def __init__(self, streaming_url):
         super().__init__()
-        self.process_id = process_id
+        self.streaming_url = streaming_url
         self.video_config = VideoConfig(drop_last_frame_in_n_steps=2)
         self.process_status = ProcessStatus()
 
@@ -49,7 +49,7 @@ class TrackingProcess(BaseThread):
         person_ids, _, facial_vectors = PersonPicklePersistence().load_information()
 
         try:
-            image_decoding_thread = ImageDecodingThread("samples/tai.mp4",
+            image_decoding_thread = ImageDecodingThread(self.streaming_url,
                                                         self.video_config,
                                                         self.process_status,
                                                         self.detecting_queue)

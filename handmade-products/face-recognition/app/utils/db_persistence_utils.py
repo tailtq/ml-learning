@@ -17,7 +17,7 @@ class DBPersistenceUtils:
         :param rowid:
         :return:
         """
-        result = self._fetchone(f"SELECT * FROM {self.table_name} WHERE id = ?", (row_id))
+        result = self._fetchone(f"SELECT * FROM {self.table_name} WHERE id = ?", [row_id])
 
         return result
 
@@ -98,7 +98,7 @@ class DBPersistenceUtils:
     def _generate_connection(self):
         return sqlite3.connect(self.database_name)
 
-    def _fetchall(self, query, *values):
+    def _fetchall(self, query, values=[]):
         con = self._generate_connection()
 
         cur = con.cursor()
@@ -117,7 +117,7 @@ class DBPersistenceUtils:
 
         return result
 
-    def _fetchone(self, query, *values):
+    def _fetchone(self, query, values=[]):
         con = self._generate_connection()
 
         cur = con.cursor()

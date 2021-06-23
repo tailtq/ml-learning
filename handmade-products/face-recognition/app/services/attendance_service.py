@@ -30,6 +30,6 @@ class AttendanceDBPersistence(DBPersistenceUtils):
 
     def list_by_date(self, date):
         query = f"SELECT * FROM {self.table_name} WHERE date(substr(attended_at, 0, 11)) = date(?) order by attended_at"
-        result = self._fetchall(query, date)
+        result = self._fetchall(query, [date])
 
         return result

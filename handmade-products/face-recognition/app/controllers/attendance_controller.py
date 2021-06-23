@@ -13,7 +13,6 @@ class AttendanceAPI(MethodView):
 
     def get(self):
         date = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
-        print(date)
         result = self.attendance_service.list_by_date(date)
 
         return {"data": result}

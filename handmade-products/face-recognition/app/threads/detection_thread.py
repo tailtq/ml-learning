@@ -22,6 +22,8 @@ class DetectionThread(BaseThread):
     def _run(self):
         print(f"DetectionThread is running")
 
+        start_time = time.time()
+
         while True:
             if self.tracking_queue.qsize() > self.video_config.max_queue_size:
                 time.sleep(0.001)
@@ -38,5 +40,7 @@ class DetectionThread(BaseThread):
             elif self.process_status.image_decoding_status and self.detecting_queue.empty():
                 # set status for this thread
                 break
+
+        print(f"{self.__class__.__name__}: {time.time() - start_time}")
 
         self.process_status.detecting_status = True

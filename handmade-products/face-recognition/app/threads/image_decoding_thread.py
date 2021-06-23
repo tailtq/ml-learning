@@ -32,7 +32,10 @@ class ImageDecodingThread(BaseThread):
         start_time = time.time()
 
         while True:
-            if self.detecting_queue.qsize() > self.video_config.max_queue_size:
+            if self.process_status.image_decoding_status:
+                break
+
+            if self.detecting_queue.qsize() >= self.video_config.max_queue_size:
                 time.sleep(0.001)
                 continue
 
@@ -49,6 +52,7 @@ class ImageDecodingThread(BaseThread):
 
             # decode frame
             _, frame = stream.retrieve()
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             # put image to queue to be handled at another thread
             self.detecting_queue.put({
@@ -56,7 +60,7 @@ class ImageDecodingThread(BaseThread):
                 "frame": frame,
             })
 
-            # print performance time
+        # print performance time
         print(f"{self.__class__.__name__}: {time.time() - start_time}")
 
         # set status for this thread

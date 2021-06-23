@@ -8,12 +8,12 @@ from app.configs.models import feature_vectors
 
 # app = FaceRecognition("ArcFace", False, "FaceEmbedding/model-r100-ii/model-0000.params")
 # app.prepare(-1)
+from app.services.person_service import PersonPicklePersistence
 
 if __name__ == "__main__":
     image_path = sys.argv[1]
 
-    comparing_names = list(feature_vectors.keys())
-    comparing_vectors = np.array(list(feature_vectors.values()))
+    comparing_person_ids, _, comparing_vectors = PersonPicklePersistence().load_information()
 
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -37,14 +37,14 @@ if __name__ == "__main__":
         closest_face_index = distances.argmin()
 
         for index, distance in enumerate(distances):
-            print(f"Name --- {comparing_names[index]}: {distance}")
+            print(f"Name --- {comparing_person_ids[index]}: {distance}")
 
         if distances[closest_face_index] < 1.5:
-            print(f"Result --- {comparing_names[closest_face_index]}: {distances[closest_face_index]}")
+            print(f"Result --- {comparing_person_ids[closest_face_index]}: {distances[closest_face_index]}")
             # write name to object
             cx = detection[0]
             cy = detection[1] - 24
-            cv2.putText(image, comparing_names[closest_face_index], (cx, cy), cv2.FONT_HERSHEY_DUPLEX, 1,
+            cv2.putText(image, comparing_person_ids[closest_face_index], (cx, cy), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (255, 255, 255), 2)
 
         # draw bounding box

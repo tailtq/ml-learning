@@ -4,6 +4,7 @@ import threading
 class BaseThread:
     def __init__(self):
         self.thread = None
+        self.child_threads = []
 
     def _run(self):
         pass

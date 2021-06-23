@@ -7,21 +7,7 @@ class DBPersistenceUtils:
         self.table_name = table_name
 
     def find(self):
-        con = self._generate_connection()
-
-        cur = con.cursor()
-        cur.execute(f"SELECT * FROM {self.table_name}")
-        # get data
-        batch_values = cur.fetchall()
-
-        # get columns name
-        columns = list(map(lambda x: x[0], cur.description))
-
-        cur.close()
-        con.close()
-
-        # combine columns and values
-        result = [dict(zip(columns, values)) for values in batch_values]
+        result = self._fetchall(f"SELECT * FROM {self.table_name}")
 
         return result
 
@@ -31,24 +17,7 @@ class DBPersistenceUtils:
         :param rowid:
         :return:
         """
-        con = self._generate_connection()
-
-        cur = con.cursor()
-        cur.execute(f"SELECT * FROM {self.table_name} WHERE id = ?", [row_id])
-        # get data
-        values = cur.fetchone()
-
-        # get columns name
-        columns = list(map(lambda x: x[0], cur.description))
-
-        cur.close()
-        con.close()
-
-        if not values:
-            return None
-
-        # combine columns and values
-        result = dict(zip(columns, values))
+        result = self._fetchone(f"SELECT * FROM {self.table_name} WHERE id = ?", (row_id))
 
         return result
 
@@ -128,3 +97,44 @@ class DBPersistenceUtils:
 
     def _generate_connection(self):
         return sqlite3.connect(self.database_name)
+
+    def _fetchall(self, query, *values):
+        con = self._generate_connection()
+
+        cur = con.cursor()
+        cur.execute(query, values)
+        # get data
+        batch_values = cur.fetchall()
+
+        # get columns name
+        columns = list(map(lambda x: x[0], cur.description))
+
+        cur.close()
+        con.close()
+
+        # combine columns and values
+        result = [dict(zip(columns, values)) for values in batch_values]
+
+        return result
+
+    def _fetchone(self, query, *values):
+        con = self._generate_connection()
+
+        cur = con.cursor()
+        cur.execute(query, values)
+        # get data
+        values = cur.fetchone()
+
+        # get columns name
+        columns = list(map(lambda x: x[0], cur.description))
+
+        cur.close()
+        con.close()
+
+        if not values:
+            return None
+
+        # combine columns and values
+        result = dict(zip(columns, values))
+
+        return result

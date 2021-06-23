@@ -22,16 +22,18 @@ class PersonAPI(MethodView):
             return {"data": None}, 404
 
     def post(self):
-        result = self.person_service.create(request.form.get("name"),
-                                            request.files.get("image").read())
+        name = request.form.get("name")
+        image = request.files.get("image").read()
+
+        result = self.person_service.create(name, image)
 
         return {"data": result}
 
     def put(self, person_id):
         image = request.files.get("image").read() if request.files.get("image") else None
-        result = self.person_service.update(person_id,
-                                            request.form.to_dict(),
-                                            image)
+        form_data = request.form.to_dict()
+
+        result = self.person_service.update(person_id, form_data, image)
 
         return {"data": result}
 

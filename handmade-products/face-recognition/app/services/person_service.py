@@ -11,16 +11,13 @@ from app.utils.pickle_utils import load_pickle, save_pickle
 from app.utils.db_persistence_utils import DBPersistenceUtils
 from app.utils.local_storage_utils import LocalStorageUtils
 
-env_config = dotenv_values(".env")
-
-pickle_file_path = "./storage/faces.pickle"
-avatar_local_storage = "public/img"
-
 
 class PersonService:
     def __init__(self):
+        self.avatar_local_storage = "public/img"
+
         self.person_db_persistence = PersonDBPersistence()
-        self.person_pickle_persistence = PersonPicklePersistence(pickle_file_path)
+        self.person_pickle_persistence = PersonPicklePersistence()
 
         self.attendance_db_persistence = AttendanceDBPersistence()
 
@@ -48,7 +45,7 @@ class PersonService:
 
         # align face and extract facial vector
         aligned_face, facial_vector = self._extract_facial_vector(image)
-        image_path = LocalStorageUtils.save_image(aligned_face, avatar_local_storage)
+        image_path = LocalStorageUtils.save_image(aligned_face, self.avatar_local_storage)
 
         # insert data to database
         person_id = self.person_db_persistence.create({
@@ -81,7 +78,7 @@ class PersonService:
 
             # align face and extract facial vector
             aligned_face, facial_vector = self._extract_facial_vector(image)
-            image_path = LocalStorageUtils.save_image(aligned_face, avatar_local_storage)
+            image_path = LocalStorageUtils.save_image(aligned_face, self.avatar_local_storage)
 
             # insert face to pickle file
             self.person_pickle_persistence.save_person(person_id, list(facial_vector), image_path)
@@ -135,12 +132,30 @@ class PersonService:
 
 class PersonDBPersistence(DBPersistenceUtils):
     def __init__(self):
+        env_config = dotenv_values(".env")
         super().__init__(env_config["DATABASE_PATH"], "people")
 
 
 class PersonPicklePersistence:
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self):
+        env_config = dotenv_values(".env")
+        self.file_path = env_config["PICKLE_PATH"]
+
+    def load_information(self):
+        """
+        Load information for tracking and comparison
+        :return:
+        """
+        people = load_pickle(self.file_path, {})
+        person_ids, images, facial_vectors = [], [], []
+
+        for person_id, data in people.items():
+            for image, facial_vector in zip(data["images"], data["facial_vectors"]):
+                person_ids.append(person_id)
+                images.append(image)
+                facial_vectors.append(facial_vector)
+
+        return person_ids, images, np.array(facial_vectors)
 
     def save_person(self, person_id, vector, image_path):
         """
@@ -181,6 +196,12 @@ class PersonPicklePersistence:
         return None
 
     def delete_index(self, person_id, index):
+        """
+        Delete face index of a person
+        :param person_id:
+        :param index:
+        :return:
+        """
         assert index >= 0
 
         people = load_pickle(self.file_path, {})
